@@ -8,6 +8,7 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -24,6 +25,13 @@ import java.util.Map;
  * @author Anserlt
  */
 public class HttpUtil {
+
+    /**
+     * 构造httpclient实例
+     */
+    public HttpClient createDigestHttpClient(){
+        return HttpClientBuilder.create().build();
+    }
 
     /**
      * 构造需要用户名、密码Digest认证的HTTP请求客户端
