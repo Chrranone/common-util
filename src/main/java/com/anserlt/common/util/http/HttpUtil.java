@@ -53,7 +53,7 @@ public class HttpUtil {
     }
 
     /**
-     *
+     * 发送请求的时候，设置header属性，并解析返回的json对象
      */
     public void sendRequestWithSetHeadersAndParseResponse() {
         HttpClient httpClient = createHttpClient();
