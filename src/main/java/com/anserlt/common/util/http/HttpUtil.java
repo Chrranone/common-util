@@ -1,7 +1,10 @@
 package com.anserlt.common.util.http;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
@@ -10,6 +13,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.http.converter.StringHttpMessageConverter;
@@ -29,7 +33,7 @@ public class HttpUtil {
     /**
      * 构造httpclient实例
      */
-    public HttpClient createDigestHttpClient(){
+    public HttpClient createHttpClient(){
         return HttpClientBuilder.create().build();
     }
 
@@ -46,6 +50,37 @@ public class HttpUtil {
         credentialsProvider.setCredentials(new AuthScope(ObjectUtils.isEmpty(host) ? AuthScope.ANY_HOST : host, port == null ? AuthScope.ANY_PORT : port),
                 new UsernamePasswordCredentials(username,password));
         return HttpClients.custom().setDefaultCredentialsProvider(credentialsProvider).build();
+    }
+
+    /**
+     *
+     */
+    public void sendRequestWithSetHeadersAndParseResponse() {
+        HttpClient httpClient = createHttpClient();
+
+        String url = "";
+        HttpPost httpPost = new HttpPost(url);
+
+        httpPost.setHeader("Authorization", "123");
+        HttpResponse response = null;
+        try {
+            response = httpClient.execute(httpPost);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (response != null && response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+            HttpEntity entity = response.getEntity();
+            String bodyString = null;
+            try {
+                bodyString = EntityUtils.toString(entity);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if (!ObjectUtils.isEmpty(bodyString)) {
+                JSONObject bodyJson = JSON.parseObject(bodyString);
+                // bodyJson 获取需要的数据，如message、data
+            }
+        }
     }
 
     /**
