@@ -10,9 +10,12 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.params.CoreConnectionPNames;
 import org.apache.http.util.EntityUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -154,6 +157,39 @@ public class HttpUtil {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(url, jsonObject, String.class);
 
         return responseEntity;
+    }
+
+    /**
+     * 发送请求体为json的post请求
+     * @param url 请求地址
+     * @param body json数据
+     * @return 响应结果
+     */
+    public JSONObject sendPostRequestBodyIsJson(String url, JSONObject body) {
+        DefaultHttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter(CoreConnectionPNames.CONNECTION_TIMEOUT, 2000);
+
+        HttpPost httpPost = new HttpPost(url);
+        httpPost.setHeader("Accept", "application/json");
+        httpPost.setHeader("Content-Type", "application/json");
+        StringEntity requesteEntity = new StringEntity(body.toString(), StandardCharsets.UTF_8);
+        httpPost.setEntity(requesteEntity);
+
+        JSONObject resultData = null;
+        HttpResponse httpResponse = null;
+        try {
+            httpResponse = client.execute(httpPost);
+            HttpEntity entity = httpResponse.getEntity();
+            if(entity != null){
+                String result = EntityUtils.toString(entity,"UTF-8");
+                resultData = JSONObject.parseObject(result);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        return resultData;
     }
 
 }
